@@ -1,4 +1,3 @@
-import ButtonPage from "./pages/ButtonPage";
 import Accordion from "./components/Accordion";
 
 function App() {

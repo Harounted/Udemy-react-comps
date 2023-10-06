@@ -6,20 +6,16 @@ function Accordion({ items }) {
 
   const renderedItems = items.map((item, index) => {
     const handleClick = (index) => {
-      console.log(expandedIndex);
-      if (index === expandedIndex) {
-        setExpandedIndex(-1);
-      } else {
-        setExpandedIndex(index);
-      }
+      setExpandedIndex((current) => {
+        if (current === index) {
+          return -1;
+        } else {
+          return index;
+        }
+      });
     };
 
     const isExpanded = index === expandedIndex;
-    if (isExpanded) {
-      console.log("expanded");
-    } else {
-      console.log("collapsed");
-    }
 
     const icon = (
       <span className="text-2xl">

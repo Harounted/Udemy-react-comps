@@ -1,4 +1,4 @@
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/SideBar";
 import Route from "./components/Route";
 import AccordionPage from "./pages/AccordionPage";
 import DropDownPage from "./pages/DropDownPage";

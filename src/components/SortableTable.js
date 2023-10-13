@@ -1,22 +1,14 @@
-import { useState } from "react";
 import Table from "./Table";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
+import useSort from "../hooks/use-sort";
 
 function SortableTable(props) {
-  const [sortOrder, setSortOrder] = useState(null);
-  const [sortBy, setSortBy] = useState(null);
   const { config, data } = props;
-  const handleClick = (label) => {
-    if (sortOrder === null) {
-      setSortOrder("asc");
-      setSortBy(label);
-    } else if (sortOrder === "asc") {
-      setSortOrder("desc");
-      setSortBy(label);
-    } else if (sortOrder === "desc") {
-      setSortOrder(null);
-    }
-  };
+  const { sortOrder, sortBy, sortedData, setSortColumn } = useSort(
+    data,
+    config
+  );
+
   const updateconfig = config.map((column) => {
     if (!column.sortValue) {
       return column;
@@ -27,7 +19,7 @@ function SortableTable(props) {
       header: () => (
         <th
           className="cursor-pointer hover:bg-gray-100"
-          onClick={() => handleClick(column.label)}
+          onClick={() => setSortColumn(column.label)}
         >
           <div className="flex items-center">
             {getIcons(column.label, sortBy, sortOrder)}
@@ -38,28 +30,7 @@ function SortableTable(props) {
     };
   });
 
-  let sortedData = data;
-  if (sortOrder && sortBy) {
-    const { sortValue } = config.find((column) => column.label === sortBy);
-    sortedData = [...data].sort((a, b) => {
-      const valueA = sortValue(a);
-      const valueB = sortValue(b);
-
-      const reverseOrder = sortOrder === "asc" ? 1 : -1;
-
-      if (typeof valueA === "string") {
-        return valueA.localeCompare(valueB) * reverseOrder;
-      } else {
-        return (valueA - valueB) * reverseOrder;
-      }
-    });
-  }
-  return (
-    <div>
-      {sortBy} - {sortOrder}
-      <Table {...props} data={sortedData} config={updateconfig} />
-    </div>
-  );
+  return <Table {...props} data={sortedData} config={updateconfig} />;
 }
 
 const getIcons = (label, sortBy, sortOrder) => {

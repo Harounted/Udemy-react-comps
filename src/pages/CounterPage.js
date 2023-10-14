@@ -1,3 +1,4 @@
+import { produce } from "immer";
 import { useReducer } from "react";
 import Button from "../components/Button";
 import Panel from "../components/Panel";
@@ -10,33 +11,25 @@ const SUBMIT_VALUE = "submit";
 const reducer = (state, action) => {
   switch (action.type) {
     case INCREMENT_COUNT:
-      return {
-        ...state,
-        count: state.count + 1,
-      };
+      state.count = state.count + 1;
+      return;
     case DECREMENT_COUNT:
-      return {
-        ...state,
-        count: state.count - 1,
-      };
+      state.count = state.count - 1;
+      return;
     case CHANGE_VALUE:
-      return {
-        ...state,
-        valueToAdd: action.payload,
-      };
+      state.valueToAdd = action.payload;
+      return;
     case SUBMIT_VALUE:
-      return {
-        ...state,
-        count: action.payload,
-        valueToAdd: 0,
-      };
+      state.count = state.count + state.valueToAdd;
+      state.valueToAdd = 0;
+      return;
     default:
-      return state;
+      return;
   }
 };
 
 function CounterPage({ initialCount }) {
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useReducer(produce(reducer), {
     count: initialCount,
     valueToAdd: 0,
   });
@@ -64,17 +57,16 @@ function CounterPage({ initialCount }) {
     event.preventDefault();
     dispatch({
       type: SUBMIT_VALUE,
-      payload: parseInt(state.count) + parseInt(state.valueToAdd),
     });
   };
   return (
     <Panel className="m-3">
       <h1 className="text-lg"> Count is {state.count}</h1>
       <div className="flex flex-row">
-        <Button className="mr-2" primary outline onClick={increment}>
+        <Button secondary className="mr-2" outline onClick={increment}>
           Increase
         </Button>
-        <Button className="mr-2" primary outline onClick={decrement}>
+        <Button secondary className="mr-2" outline onClick={decrement}>
           Decrement
         </Button>
       </div>
@@ -86,7 +78,7 @@ function CounterPage({ initialCount }) {
           value={state.valueToAdd || ""}
           onChange={handleChange}
         />
-        <Button className="text-black">Add it !</Button>
+        <Button primary>Add it !</Button>
       </form>
     </Panel>
   );

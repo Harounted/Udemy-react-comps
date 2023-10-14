@@ -1,17 +1,94 @@
+import { useReducer } from "react";
 import Button from "../components/Button";
-import useCounter from "../hooks/use-counter";
+import Panel from "../components/Panel";
+
+const INCREMENT_COUNT = "increment";
+const DECREMENT_COUNT = "decement";
+const CHANGE_VALUE = "change";
+const SUBMIT_VALUE = "submit";
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case INCREMENT_COUNT:
+      return {
+        ...state,
+        count: state.count + 1,
+      };
+    case DECREMENT_COUNT:
+      return {
+        ...state,
+        count: state.count - 1,
+      };
+    case CHANGE_VALUE:
+      return {
+        ...state,
+        valueToAdd: action.payload,
+      };
+    case SUBMIT_VALUE:
+      return {
+        ...state,
+        count: action.payload,
+        valueToAdd: 0,
+      };
+    default:
+      return state;
+  }
+};
 
 function CounterPage({ initialCount }) {
-  const { count, increment } = useCounter(initialCount);
+  const [state, dispatch] = useReducer(reducer, {
+    count: initialCount,
+    valueToAdd: 0,
+  });
 
+  const increment = () => {
+    dispatch({
+      type: INCREMENT_COUNT,
+    });
+  };
+  const decrement = () => {
+    dispatch({
+      type: DECREMENT_COUNT,
+    });
+  };
+
+  const handleChange = (event) => {
+    const value = parseInt(event.target.value) || 0;
+    dispatch({
+      type: CHANGE_VALUE,
+      payload: value,
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    dispatch({
+      type: SUBMIT_VALUE,
+      payload: parseInt(state.count) + parseInt(state.valueToAdd),
+    });
+  };
   return (
-    <div>
-      <h1> Count is {count}</h1>
-      <Button primary outline onClick={increment}>
-        Increase
-      </Button>
-    </div>
+    <Panel className="m-3">
+      <h1 className="text-lg"> Count is {state.count}</h1>
+      <div className="flex flex-row">
+        <Button className="mr-2" primary outline onClick={increment}>
+          Increase
+        </Button>
+        <Button className="mr-2" primary outline onClick={decrement}>
+          Decrement
+        </Button>
+      </div>
+      <form onSubmit={handleSubmit}>
+        <label>Add a lot!</label>
+        <input
+          type="number"
+          className="p-1 m-3 bg-gray-50 border border-gray-300"
+          value={state.valueToAdd || ""}
+          onChange={handleChange}
+        />
+        <Button className="text-black">Add it !</Button>
+      </form>
+    </Panel>
   );
 }
-
 export default CounterPage;
